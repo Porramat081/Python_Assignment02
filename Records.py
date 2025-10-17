@@ -1,0 +1,144 @@
+from Error import ExtrabedException
+from Guest import Guest
+from Product import ApartmentUnit , SupplementaryItem , Bundle
+from Order import Order
+
+class Records:
+    def __init__(self):
+        self.guest_list = []
+        self.product_list = []
+        self.order_list = []
+
+    def read_guests(self):
+        file = open("guests.csv","r",encoding='utf-8-sig')
+        read_line = file.readline()
+        while read_line:
+            split_line = read_line.split(",")
+            guest_id = int(split_line[0])
+            guest_name = split_line[1]
+            guest_reward = float(split_line[3])
+            guest_reward_rate = float(split_line[2])
+            guest_redeem_rate = float(split_line[4])
+            guest = Guest(guest_id,guest_name,guest_reward,guest_reward_rate,guest_redeem_rate)
+            self.guest_list.append(guest)     
+            read_line = file.readline()
+        file.close()
+ 
+    def read_products(self):
+        file = open("products.csv","r",encoding='utf-8')
+        read_line = file.readline()
+        while read_line:
+            split_line = read_line.split(",")
+            if split_line[0].strip().startswith("U"):
+                apartment = ApartmentUnit(split_line[0].strip(),split_line[1].strip(),split_line[2].strip(),split_line[3][:-1].strip())
+                self.product_list.append(apartment)
+            elif split_line[0].startswith("SI"):
+                supplement = SupplementaryItem(split_line[0].strip(),split_line[1].strip(),split_line[2][:-1].strip())
+                self.product_list.append(supplement)
+            elif split_line[0].startswith("B"):
+                apt = self.find_product(split_line[2].strip())
+                bundle = Bundle(split_line[0].strip(),split_line[1].strip(),apt,split_line[3:-1],split_line[-1].strip())
+                self.product_list.append(bundle)
+            read_line = file.readline()
+        file.close()    
+
+    def read_orders(self):
+        file = open("orders.csv","r",encoding="utf-8")
+        read_line = file.readline()
+        while read_line:
+            split_line = read_line.split(",")
+            guest_name = split_line[0].strip()
+            apt_split = (split_line[1].strip()).split("x")
+            apt_night = apt_split[0].strip()
+            apt_name = apt_split[1].strip()
+            apt = self.find_product(apt_name)
+            price = split_line[-3].strip()
+            reward = split_line[-2].strip()
+            time_stamp = split_line[-1].strip()
+            product_list = split_line[2:-3]
+            apt_tuple = (apt,apt_night)
+            product_tuple_list = [apt_tuple]
+
+            for product in product_list:
+                product_split = product.split("x")
+                product_obj = self.find_product(product_split[1].strip(),sup=True)
+                product_tuple = (product_obj,product_split[0].strip())
+                product_tuple_list.append(product_tuple)
+
+            guest = self.find_guest(guest_name)
+            if guest:
+                order = Order(guest,product_tuple_list,total_price=price,reward=reward,time_stamp=time_stamp)
+                self.order_list.append(order)
+            read_line = file.readline()
+        file.close()   
+                   
+
+    def find_guest(self,query):
+        validate_guest = lambda guest : str(guest.id) == query or guest.name == query
+        result = list(filter(validate_guest,self.guest_list))
+        if len(result) != 0:
+            return result[0]
+        return None
+    
+    def find_product(self,query,sup=False):      
+        validate_product = lambda product : (str(product.id) == query or product.name == query) and (isinstance(product,ApartmentUnit) or isinstance(product,Bundle))
+        if sup:
+            validate_product = lambda product : (str(product.id) == query or product.name == query) and isinstance(product,SupplementaryItem)
+        result = list(filter(validate_product,self.product_list))
+        if len(result) != 0:
+            return result[0]
+        return None
+    
+    def list_guests(self):
+        for guest in self.guest_list:
+            guest.display_info()
+    
+    def update_products(self,productObj,length):
+        current_product_id = productObj[0].id
+        current_product_qty = productObj[1]
+        filter_exist = lambda product : str(product.id) == current_product_id
+        exist_product = list(filter(filter_exist,self.product_list))
+        if len(exist_product)>0:
+            if current_product_id == "SI6":
+                if exist_product[0][1] + current_product_qty > 2:
+                    raise ExtrabedException("max")
+                else:
+                    exist_product[0][1] = (exist_product[0][1]/length) + current_product_qty
+                    exist_product[0][1] *= length
+            else:
+                exist_product[0][1] += current_product_qty
+        else:
+            self.list_products.append(productObj)
+
+    def list_products(self , type="all" , get_len=False):
+        if type == 'apt':        
+            for product in self.product_list:
+                if isinstance(product,ApartmentUnit):
+                    product.display_info()
+        elif type == 'sup':
+            len_sup = 0
+            for product in self.product_list:
+                if isinstance(product,SupplementaryItem):
+                    if get_len:
+                        len_sup += 1
+                    else:
+                        product.display_info()
+            if get_len:
+                return len_sup
+        else:
+            for product in self.product_list:
+                product.display_info()
+
+    def save_record(self):
+        with open("guests.csv", "w") as file1,open("orders.csv" , "w") as file2,open("products.csv", "w") as file3:
+            for guest in self.guest_list:
+                write_string = guest.write_file() + "\n"
+                file1.write(write_string)
+            
+            for order in self.order_list:
+                write_string = order.write_file() + "\n"
+                file2.write(write_string)
+
+            for product in self.product_list:
+                write_string = product.write_file() + "\n"
+                file3.write(write_string)
