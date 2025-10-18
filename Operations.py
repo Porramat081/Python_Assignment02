@@ -296,6 +296,11 @@ class Operations:
             except Exception as e:
                 print(e)
         
+    def generate_stat(self):
+        print("\nGenerate key statistics\n")
+        with open("stats.txt", "w") as f:
+            stat_text = self.records.generate_stat()
+            f.write("Woops! I have deleted the content!")
 
     def save_record(self):
         print("\nsave all record\n")

@@ -39,6 +39,7 @@ Please choose from the following options:
 10) Display existing all orders
 11) Adjust the reward rate of all guests
 12) Adjust the redeem rate of all guests
+13) Generate key statistics
 0) Exit the program
 ==========================================================
 '''
@@ -69,6 +70,8 @@ Please choose from the following options:
                         operation.update_reward_rate()
                     elif input_option == 12:
                         operation.update_redeem_rate()
+                    elif input_option == 13:
+                        operation.generate_stat()
                     elif input_option == 0:
                         operation.save_record()
                         print("Exit the program , bye!!")

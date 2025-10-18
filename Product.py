@@ -126,6 +126,6 @@ class Bundle(Product):
         if len(self.sup_list) > 0:
             sup_list_str = ""
             for sup in self.sup_list:
-                sup_list_str += sup +", "
+                sup_list_str += sup.strip() +", "
             return f'{self.id}, {self.name}, {self.apt.id}, {sup_list_str}{self.price}'
         return f'{self.id}, {self.name}, {self.apt.id}, {self.price}'

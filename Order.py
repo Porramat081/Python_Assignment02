@@ -122,8 +122,6 @@ class Order:
         if self.bundle:
             total_price += float(self.bundle.price) * self.product_list[0][1]
             deduct_apt += float(self.bundle.apt.price) * self.product_list[0][1]
-            print(self.bundle.get_sup_list())
-            print(self.product_list[1:])
             for i in self.bundle.get_sup_list():
                 for j in self.product_list[1:]:
                     if i[0] == j[0].id:
@@ -166,10 +164,24 @@ class Order:
         '''generate string for writing in csv'''
         init_string = f'{self.guest.name}, {self.product_list[0][1]} x {self.product_list[0][0].id}, {self.total_price}, {self.reward}, {self.time_stamp}'
         product_string = ''
-        if len(self.product_list[1:0]) > 0:
+        if len(self.product_list[1:]) > 0:
             for product in self.product_list[1:]:
                 new_string = f'{product[1]} x {product[0].id},'
                 product_string += new_string
         if product_string != '':
             init_string = f'{self.guest.name}, {self.product_list[0][1]} x {self.product_list[0][0].id}, {product_string} {self.total_price}, {self.reward}, {self.time_stamp}'
         return init_string
+
+    def get_stat_product(self):
+        '''get product stat for each order'''
+        stay_length = int(self.product_list[0][1])
+        if self.bundle:
+            return [{0:self.bundle.name , 1:stay_length ,2:stay_length * float(self.bundle.price)}]
+        sub_list = [{0:self.product_list[0][0].id , 1:stay_length ,  2:stay_length * float(self.product_list[0][0].price)}]
+        for sub in self.product_list[1:]:
+            sub_list.append({0:sub[0].name , 1:sub[1] ,2:sub[1] * float(sub[0].price)})
+        return sub_list
+    
+    def get_stat_guest(self):
+        '''get guest stat for each order'''
+        return {0:self.guest.name , 1 : float(self.total_price)}

@@ -177,3 +177,31 @@ class Records:
                init_str += f'{order.display_order()}\n'
                index += 1
         print(init_str)
+
+    def generate_stat(self):
+        '''functon generate stats string'''
+        stat_list = []
+        stat_list2 = []
+        for order in self.order_list:
+            stat_product_list = order.get_stat_product()
+            stat_guest = order.get_stat_guest()
+            is_guest_exist = False
+            for stat in stat_list2:
+                if stat[0] == stat_guest[0]:
+                    is_guest_exist = True
+                    stat[1] += stat_guest[1]
+            if not is_guest_exist:
+                stat_list2.append(stat_guest)
+            for stat_product in stat_product_list:
+                is_exist = False
+                for stat in stat_list:
+                    if stat[0] == stat_product[0]:
+                        is_exist = True
+                        stat[1] += stat_product[1]
+                        stat[2] += stat_product[2]
+                if not is_exist:
+                    stat_list.append(stat_product)
+        sorted_list = sorted(stat_list, key=lambda x: x[2] , reverse=True)
+        sorted_list2 = sorted(stat_list2, key=lambda x: x[1] , reverse=True)
+        print(sorted_list[:3])
+        print(sorted_list2[:3])

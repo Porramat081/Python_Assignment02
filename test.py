@@ -1,5 +1,3 @@
-input_rate = "122.33ee"
+dixt = [{"u":1}]
 
-res = isinstance(float(input_rate),float)
-
-print(res)
+print("u" in dixt)
