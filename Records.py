@@ -137,9 +137,13 @@ class Records:
             if get_len:
                 return len_sup
         elif type == "bun":
+            len_bun = 0
             for product in self.product_list:
                 if isinstance(product,Bundle):
+                    len_bun += 1
                     export_list.append(product.display_info())
+            if get_len:
+                return len_bun
         else:
             for product in self.product_list:
                 export_list.append(product.display_info())

@@ -96,6 +96,12 @@ class Bundle(Product):
         self.apt = apt
         self.sup_list = sup_list
 
+    def set_apt(self,new_apt):
+        self.apt = new_apt
+
+    def set_sup_list(self , new_suplist):
+        self.sup_list = new_suplist
+
     def get_sup_list(self):
         '''return supplement list in bundle'''
         sup_list_export = []

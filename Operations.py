@@ -172,60 +172,60 @@ class Operations:
                 else:
                     input_id , input_rate , input_capacity = mod_apt.split(" ")
                     input_id , input_rate , input_capacity = input_id.strip() , input_rate.strip() , input_capacity.strip()
-                    if not input_id.startswith("U"):
-                        raise Exception("ApartmentID must contain the leading capital U")
-                    elif not ApartmentUnit.check_apt_name(input_id):
-                        raise Exception("ApartmentID is invalid , must contain U + Unit number + alphabet")
-                    elif not input_rate.isnumeric() and not isinstance(float(input_rate), float):
-                        raise TypeException("Rate","integer",'float')
-                    elif not input_capacity.isdigit():
-                        raise TypeException("Capacity","integer")
-                    elif float(input_rate) <= 0:
-                        raise InvalidNumber("Rate",">0")
-                    elif int(input_capacity) <= 0:
-                        raise InvalidNumber("Capacity", ">0")
+            
+                    # pass all validate
+                    is_exist = self.records.find_product(input_id)
+                    if not is_exist:
+                        if not input_id.startswith("U"):
+                            raise Exception("ApartmentID must contain the leading capital U")
+                        elif not ApartmentUnit.check_apt_name(input_id):
+                            raise Exception("ApartmentID is invalid , must contain U + Unit number + alphabet")
+                        elif not input_rate.isnumeric() and not isinstance(float(input_rate), float):
+                            raise TypeException("Rate","integer",'float')
+                        elif not input_capacity.isdigit():
+                            raise TypeException("Capacity","integer")
+                        elif float(input_rate) <= 0:
+                            raise InvalidNumber("Rate",">0")
+                        elif int(input_capacity) <= 0:
+                            raise InvalidNumber("Capacity", ">0")
+                        (unit_number , unit_name) = ApartmentUnit.check_apt_name(input_id,get_value=True)
+                        gen_name = f'Unit {unit_number} {unit_name} Building'
+                        new_apt = ApartmentUnit(input_id,gen_name,input_rate,input_capacity)
+                        self.records.product_list.append(new_apt)
+                        print("Add new apartment successfully")
                     else:
-                        # pass all validate
-                        is_exist = self.records.find_product(input_id)
-                        if not is_exist:
-                            (unit_number , unit_name) = ApartmentUnit.check_apt_name(input_id,get_value=True)
-                            gen_name = f'Unit {unit_number} {unit_name} Building'
-                            new_apt = ApartmentUnit(input_id,gen_name,input_rate,input_capacity)
-                            self.records.product_list.append(new_apt)
-                            print("Add new apartment successfully")
-                        else:
-                            is_exist.price = float(input_rate)
-                            is_exist.capacity = int(input_capacity)
-                            print("Update existing apartment successfully")
-                        break
+                        is_exist.price = float(input_rate)
+                        is_exist.capacity = int(input_capacity)
+                        print("Update existing apartment successfully")
+                    break
             except ValueError:
                 print("\nRate must be integer or float number\n")
             except Exception as e:
-                print(e,"\n")
+                print(e,", please try again","\n")
 
     def add_update_supplement(self):
         while True:
             try:
-                input_update = input("enter updated supplementary list (item_name1<str> item_price1<num> , ...): \n").strip()
+                input_update = input("enter updated supplementary list (item_id/name1<str> item_price1<num> , ...): \n").strip()
                 input_update_list = input_update.split(",") if not input_update.endswith(",") else input_update[:-1].split(",")
 
                 if len(input_update_list) >=1 :
                     for j in input_update_list:
                         update_item = j.strip().split(" ")
                         if len(update_item) < 2 or update_item == "":
-                            raise Exception("invalid format -> item_name<str> item_price<num> , ...")
+                            raise Exception("invalid format -> item_id/name<str> item_price<num> , ...")
                         else:
                             if  update_item[0].strip().isnumeric():
-                                raise Exception("supplement item name must be alphabet")
+                                raise Exception("supplement item ID or name must be alphabet")
                             elif not update_item[1].strip().isnumeric() and not isinstance(float(update_item[1].strip()), float): # isinstance for checking type [7]
-                                raise Exception("item price must be number")
+                                raise Exception("supplement item price must be number")
                             elif float(update_item[1].strip()) <= 0:
-                                raise Exception("item price must be positive number")
+                                raise Exception("supplement item price must be positive number")
                             else:
                                 product_name = update_item[0].strip()
                                 product_price = float(update_item[1].strip())
 
-                                is_exist = self.records.find_product(product_name)
+                                is_exist = self.records.find_product(product_name , sup=True)
 
                                 if is_exist:
                                     is_exist.price = product_price
@@ -245,8 +245,48 @@ class Operations:
     def add_update_bundle(self):
         while True:
             try:
-                input_update = input("enter adding/modifying apartment in format (bundle_name aparment_id sup1 sup2 ... rate) : \n")
+                input_update = input("enter adding/modifying apartment in format (bundle_id/name aparment_id sup1 sup2 ... rate) : \n").strip()
                 update_split = input_update.split(" ")
+                bundle_id = update_split[0].strip()
+                apt_id = update_split[1].strip()
+                sup_list = update_split[2:-1]
+                bundle_price = float(update_split[-1].strip())
+
+                if bundle_id.isnumeric():
+                    raise TypeException("bundle ID / Name" , "Alphabet")
+
+                exist_apt = self.records.find_product(apt_id)
+
+                is_all_sup_exist = True
+                bundle_sup_list = []
+
+                for sup in sup_list:
+                    exist_sup = self.records.find_product(sup.strip(),sup=True)
+                    if not exist_sup:
+                        is_all_sup_exist = False
+                    else:
+                        bundle_sup_list.append(sup.strip())
+                        
+                if not exist_apt:
+                    raise Exception("This Apartment doesn't exist , please try again")
+                if not is_all_sup_exist:
+                    raise Exception("Some supplement doesn't exist , please try again")
+                else:
+                    exist_bundle = self.records.find_product(bundle_id)
+
+                    if not exist_bundle:
+                        new_id = "B" + str(self.records.list_products(type="bun",get_len=True))
+                        new_bundle = Bundle(new_id,bundle_id,exist_apt,bundle_sup_list,bundle_price)
+                        self.records.product_list.append(new_bundle)
+                        print("Add new bundle successfully")
+                    else:
+                        exist_bundle.set_apt(exist_apt)
+                        exist_bundle.set_sup_list(bundle_sup_list)
+                        exist_bundle.price = bundle_price
+                        print("Update bundle successfully")
+                    break
+            except ValueError:
+                print("Bundle price must be integer or float")
             except Exception as e:
                 print(e,", please try again")
 
