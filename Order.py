@@ -2,24 +2,30 @@ from datetime import datetime
 from Guest import Guest
 
 class Order:
+    '''class Order - For managing order information'''
     current_date = datetime.now()
     time_stamp = current_date.strftime("%d/%m/%Y %H:%M")
 
-    def __init__(self,guest:Guest,product_list=[],time_stamp=time_stamp,total_price=0,reward=0):
+    # constructor - set attribute value for instance
+    def __init__(self,guest:Guest,product_list=[],time_stamp=time_stamp,total_price=0,reward=0,bundle=None):
         self.guest = guest
         self.product_list = product_list
         self.time_stamp = time_stamp
         self.total_price = total_price
         self.reward = reward
+        self.bundle = bundle
 
     def set_total_price(self,total_price):
+        '''set new value to total price'''
         self.total_price = total_price
     
     def set_reward(self,reward):
+        '''set new value to earn reward'''
         self.reward = reward
 
     @staticmethod
     def ask_date(type="in" , compare_date=""):
+        '''get input date from user'''
         while True:
             try:
                 question = "When will the guest is expected to check {} (d/m/yyyy):\n".format(type)
@@ -48,13 +54,21 @@ class Order:
                 print("\n",e,"\n")
     
     def display_recript(self,number_guest,check_in , check_out , use_reward):
+        '''display order information and print in recipt form'''
+        bundleName = ""
+        show_rate = f'\n{'Apartment rate:$':<28}{self.product_list[0][0].price} (AUD)'
+        if self.bundle:
+            bundleName = f'\n{'Bundle name:':<28}{self.bundle.name}'
+            show_rate = f'\n{'Bundle rate:$':<28}{self.bundle.price} (AUD)'
         total_price,discount,final_price,earn_reward,used_reward = self.compute_cost(use_reward)
         sup_str , sup_total = self.format_sup_list(self.product_list[0][1])
+
         receipt = f'{'='*69}\n{"Debuggers Hut Serviced Apartments - Booking Receipt":^70}\n{'='*69}\
             \n{'Guest name:':<28}{self.guest.name}\
             \n{'Number of guests:':<28}{number_guest}\
+            {bundleName}\
             \n{'Apartment name:':<28}{self.product_list[0][0].name}\
-            \n{'Apartment rate:$':<28}{self.product_list[0][0].price} (AUD)\
+            {show_rate}\
             \n{'Check-in date:':<28}{check_in}\
             \n{'Check-out date:':<28}{check_out}\
             \n{'Length of stay:':<28}{self.product_list[0][1]} (nights)\
@@ -75,6 +89,7 @@ class Order:
         return final_price , earn_reward
 
     def format_sup_list(self,length):
+        '''Adjust formatting of supplement list and calculate total supplement price'''
         sup_list = self.product_list[1:]
         total_sup = 0
         init_str = f'{'ID':^10}{'Name':^28}{'Quantity':^10}{'Unit Price$':^15}{'Cost$':^8}\n'
@@ -92,10 +107,13 @@ class Order:
         return init_str,total_sup
 
     def compute_cost(self,use_reward):
+        '''calculate total price and reward'''
         total_price = 0
         discount = 0
         for i in self.product_list:
             total_price += (float(i[0].price) * int(i[1]))
+        if self.bundle:
+            total_price = float(self.bundle.price) * self.product_list[0][1]
         guest_reward = self.guest.get_reward(total_cost=None)
         used_point = guest_reward 
         if guest_reward >= 100 and use_reward:
@@ -109,11 +127,13 @@ class Order:
         return total_price,discount,final_price,earn_reward,used_point
     
     def display_info(self):
+        '''display order information'''
         self.guest.display_info()
         for sup in self.product_list:
             sup[0].display_info()
     
     def write_file(self):
+        '''generate string for writing in csv'''
         init_string = f'{self.guest.name}, {self.product_list[0][1]} x {self.product_list[0][0].id}, {self.total_price}, {self.reward}, {self.time_stamp}'
         product_string = ''
         if len(self.product_list[1:0]) > 0:

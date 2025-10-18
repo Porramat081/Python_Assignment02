@@ -1,27 +1,33 @@
 from Error import TypeException , OptionException , InvalidNumber
 
 class Guest:
+    '''class Guest - For managing guest information'''
     __reward_rate = 100 # 100%
     __redeem_rate = 1
 
     @staticmethod
     def get_reward_rate():
+        ''' get static variable reward rate from class Guest '''
         return Guest.__reward_rate
     
     @staticmethod
     def get_redeem_rate():
+        '''get static variable redeem rate from class Guest'''
         return Guest.__redeem_rate
     
     @staticmethod
     def set_reward_rate(new_rate):
+       '''set new value to static variable reward rate'''
        Guest.__reward_rate = new_rate
     
     @staticmethod
     def set_redeem_rate(new_rate):
+       '''set new value to static variable redeem rate'''
        Guest.__redeem_rate = new_rate
 
     @staticmethod
     def ask_number_guest():
+        '''get number of guest input from user'''
         while True: 
             try:
                 num_people = int(input("How many people will stay?:\n").strip())
@@ -37,16 +43,19 @@ class Guest:
             except Exception as e:
                 print(e)
     
+    # constructor - set attribute value for instance
     def __init__(self,id:int,name:str,reward=0,reward_rate=0,redeem_rate=0):
+        # check - data type before assign value
         if type(id) != int:
             raise TypeException("id","integer")
-        self.__id = id
         if not name.isalpha():
             raise TypeException("name","aplphabet")
-        self.__name = name
         if  type(reward) not in (int,float):
             raise TypeException("reward","number or float")
+        self.__name = name
+        self.__id = id
         self.__reward = reward
+        # check - if already have own reward rate when read original data from csv
         if reward_rate > 0:
             self.__reward_rate = reward_rate
         else:
@@ -95,6 +104,7 @@ class Guest:
         self.__redeem_rate = new_rate
 
     def get_reward(self,total_cost=None):
+        '''calculate reward - used to calculate guest rewards'''
         if total_cost == None:
             return self.reward
         if type(total_cost) not in (int,float):
@@ -103,6 +113,7 @@ class Guest:
         return round(reward)
     
     def update_reward(self,add_reward:float,down=False):
+        '''update reward - used to add or reduce guest rewards'''
         if type(add_reward) not in (int,float):
             raise TypeException("add reward","number or float")
         else:
@@ -112,6 +123,7 @@ class Guest:
                 self.reward += add_reward
 
     def ask_use_reward(self):
+        '''ask user for using the reward point'''
         while True:
             try:
                 if self.reward < 100:
@@ -124,8 +136,10 @@ class Guest:
                 print("\n",e,"\n")
 
     def display_info(self):
+        '''display guest instance information'''
         print(f'{self.id} {self.name} has {self.reward} point {self.redeem_rate} {self.reward_rate}')
     
     def write_file(self):
+        '''generate string for writing in csv'''
         return f'{self.id},{self.name},{self.reward_rate},{self.reward},{self.redeem_rate}'
 

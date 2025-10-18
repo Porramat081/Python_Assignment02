@@ -37,10 +37,10 @@ class Operations:
                     if isinstance(exist_apt,Bundle):
                         sup_list = exist_apt.get_sup_list()
                         exist_apt.display_info()
-                        return (exist_apt.apt , sup_list)
+                        return (exist_apt.apt , sup_list , exist_apt)
                     else:
                         exist_apt.display_info()
-                        return (exist_apt,sup_list)
+                        return (exist_apt,sup_list,None)
             except Exception as e:
                 print(e)
 
@@ -106,7 +106,6 @@ class Operations:
                         else:
                             supplement_list.append(({0:selected_sup,1:selected_qty}))
                 elif input_option.lower() == "n":
-                    print(supplement_list)
                     return supplement_list
             except Exception as e:
                 print("\n",e,"\n")
@@ -129,7 +128,7 @@ class Operations:
         print("\nmake booking\n")
         guest_obj = self.ask_guest_name()
         number_guest = Guest.ask_number_guest()
-        selected_apt,sup_list = self.ask_apartment_id()
+        selected_apt,sup_list,selected_bundle = self.ask_apartment_id()
         is_exceed , extra_bed_qty = self.check_capacity(int(selected_apt.capacity),number_guest)
         if is_exceed:
             print("Booking cannot proceed , number of guests exceed than room capacity")
@@ -140,6 +139,8 @@ class Operations:
         is_use_reward = guest_obj.ask_use_reward()
         product_list = [(selected_apt,int(stay_length))] + selected_sup
         new_order = Order(guest=guest_obj,product_list=product_list)
+        if selected_bundle:
+            new_order = Order(guest=guest_obj,product_list=product_list,bundle=selected_bundle)
         total_price , earn_reward =new_order.display_recript(number_guest=number_guest,check_in=check_in,check_out=check_out,use_reward=is_use_reward)
         new_order.set_total_price(total_price=total_price)
         new_order.set_reward(earn_reward)

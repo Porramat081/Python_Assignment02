@@ -4,12 +4,15 @@ from Product import ApartmentUnit , SupplementaryItem , Bundle
 from Order import Order
 
 class Records:
+    '''class Record - For managing record information'''
+    # constructor - init attribute 3 lists : guest_list , product_list , order_list
     def __init__(self):
         self.guest_list = []
         self.product_list = []
         self.order_list = []
 
     def read_guests(self):
+        '''read guest data in guests.csv and append those data to guest_list'''
         file = open("guests.csv","r",encoding='utf-8-sig')
         read_line = file.readline()
         while read_line:
@@ -25,6 +28,7 @@ class Records:
         file.close()
  
     def read_products(self):
+        '''read product data in products.csv and append those data to product_list'''
         file = open("products.csv","r",encoding='utf-8')
         read_line = file.readline()
         while read_line:
@@ -43,6 +47,7 @@ class Records:
         file.close()    
 
     def read_orders(self):
+        '''read order data in orders.csv and append those data to order_list'''
         file = open("orders.csv","r",encoding="utf-8")
         read_line = file.readline()
         while read_line:
@@ -74,13 +79,15 @@ class Records:
                    
 
     def find_guest(self,query):
+        '''find a guest in guest_list by search query (id or name)'''
         validate_guest = lambda guest : str(guest.id) == query or guest.name == query
         result = list(filter(validate_guest,self.guest_list))
         if len(result) != 0:
             return result[0]
         return None
     
-    def find_product(self,query,sup=False):      
+    def find_product(self,query,sup=False):   
+        '''find a product in product_list by search query (id or name)'''   
         validate_product = lambda product : (str(product.id) == query or product.name == query) and (isinstance(product,ApartmentUnit) or isinstance(product,Bundle))
         if sup:
             validate_product = lambda product : (str(product.id) == query or product.name == query) and isinstance(product,SupplementaryItem)
@@ -90,10 +97,12 @@ class Records:
         return None
     
     def list_guests(self):
+        '''display guest information in guest_list'''
         for guest in self.guest_list:
             guest.display_info()
     
     def update_products(self,productObj,length):
+        '''update new product object to product_list'''
         current_product_id = productObj[0].id
         current_product_qty = productObj[1]
         filter_exist = lambda product : str(product.id) == current_product_id
@@ -111,6 +120,7 @@ class Records:
             self.list_products.append(productObj)
 
     def list_products(self , type="all" , get_len=False):
+        '''display product information in product_list'''
         if type == 'apt':        
             for product in self.product_list:
                 if isinstance(product,ApartmentUnit):
@@ -130,6 +140,7 @@ class Records:
                 product.display_info()
 
     def save_record(self):
+        '''write data in guest_list , order_list , product_list to corresponding csv files'''
         with open("guests.csv", "w") as file1,open("orders.csv" , "w") as file2,open("products.csv", "w") as file3:
             for guest in self.guest_list:
                 write_string = guest.write_file() + "\n"

@@ -1,4 +1,4 @@
-# S4144787
+# S4144787 : Porramat Thaepngoen
 # Assignment 2 : part 2 (100%) - pre-version implementation
 
 import os.path as op
@@ -30,11 +30,12 @@ Please choose from the following options:
 1) Make a booking
 2) Add/Update information of an apartment unit
 3) Add/Update information of multiple supplementary items
-4) Display all existing guests
+4) Display existing all guests
 5) Display existing guest's order history
 6) Display existing all products
 7) Display existing all aparment units
 8) Display existing all supplementary items
+9) Display existing all orders
 0) Exit the program
 ==========================================================
 '''
@@ -49,6 +50,8 @@ Please choose from the following options:
                         operation.add_update_supplement()
                     elif input_option == 4:
                         operation.display_exist_guest() 
+                    elif input_option == 5:
+                        pass
                     elif input_option == 6:
                         operation.display_exist_product()
                     elif input_option == 7:

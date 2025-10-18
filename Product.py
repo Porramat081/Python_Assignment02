@@ -1,4 +1,9 @@
+from Error import TypeException
+
+
 class Product:
+    '''class Product - For managing product information'''
+    # constructor - set attribute value for instance
     def __init__(self , id:int ,name:str,price:float):
         self.__id = id
         self.__name = name
@@ -25,9 +30,12 @@ class Product:
         self.__price = new_price
 
     def display_info(self):
+        '''display general product information'''
         print(f'{self.__id} {self.__name} {float(self.__price):.2f}')
 
 class ApartmentUnit(Product):
+    '''class AparmentUnit - For managing aparment unit information (inherit from class Product)'''
+    # constructor - set attribute value for instance
     def __init__(self, id, name, price,capacity):
         super().__init__(id, name, price)
         self.__capacity = capacity
@@ -60,26 +68,34 @@ class ApartmentUnit(Product):
         return True
     
     def display_info(self):
+        '''display aparment information (overriding method)'''
         print(f'{self.id} {self.name} {float(self.price):.2f} {self.capacity}')
 
     def write_file(self):
+        '''generate string for writing in csv'''
         return f'{self.id}, {self.name}, {self.price}, {self.capacity}'
 
 
 class SupplementaryItem(Product):
+    '''class SupplementaryItem - For managing supplement item information (inherit from class Product)'''
+    # constructor - set attribute value for instance
     def __init__(self, id, name, price):
         super().__init__(id, name, price)
     def write_file(self):
+        '''generate string for writing in csv'''
         return f'{self.id}, {self.name}, {self.price}'
     
 
 class Bundle(Product):
+    '''class Bundle - For managing bundle information (inherit from class Product)'''
+    # constructor - set attribute value for instance
     def __init__(self, id, name, apt , sup_list:list[str] ,price):
         super().__init__(id, name, price)
         self.apt = apt
         self.sup_list = sup_list
 
     def get_sup_list(self):
+        '''return supplement list in bundle'''
         sup_list_export = []
         for sup in self.sup_list:
             exist_product = False
@@ -92,6 +108,7 @@ class Bundle(Product):
         return sup_list_export
                     
     def display_info(self):
+        '''display bundle information (overriding method)'''
         dict_sup = {}
         for i in self.sup_list:
             if i.strip() not in dict_sup:
@@ -105,6 +122,7 @@ class Bundle(Product):
         print(f'{self.id} {self.name} , {self.apt.id} , {list_sup_str}{self.price}')
 
     def write_file(self):
+        '''generate string for writing in csv'''
         if len(self.sup_list) > 0:
             sup_list_str = ""
             for sup in self.sup_list:
