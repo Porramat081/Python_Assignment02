@@ -6,14 +6,19 @@ from Product import ApartmentUnit, Bundle,SupplementaryItem
 
 
 class Operations:
+    '''class Operation - For managing operation and function in this program'''
     def __init__(self , records : Records):
         self.records = records
     
     def ask_guest_name(self,check_order=False):
+        '''function getting guest name from user input'''
         while True:
-            try:        
-                name = input("Enter the name of the main guest [e.g. Porramat]:\n").strip()
-                if not name.isalpha():
+            try:
+                question =  "Enter the name of the main guest [e.g. Porramat]:\n"
+                if check_order:
+                    question = "Enter the name or id of the main guest [e.g. Porramat or 4]:\n"
+                name = input(question).strip()
+                if not name.isalpha() and not check_order:
                     raise TypeException("name","alphabet")
                 else:
                     exist_guest = self.records.find_guest(name)
@@ -29,6 +34,7 @@ class Operations:
                 print(e)
 
     def ask_apartment_id(self):
+        '''function getting apartment id or bundle id from user input'''
         while True:
             try:
                 apt_id = input("Enter apartment unit ID or bundle ID to book:\n").strip()
@@ -48,6 +54,7 @@ class Operations:
                 print(e)
 
     def ask_supplement_id(self,exist_extra_bed=0):
+        '''function getting supplement id from user input'''
         while True:
             try:
                 sup_id = input("Enter supplement id : \n").strip()
@@ -63,6 +70,7 @@ class Operations:
                 print(e)
 
     def ask_supplement_qty(self,product=None,stay_length=None,is_extrabed=False,exist_extra_bed=0):
+        '''function getting supplement quantity from user input'''
         while True:
             try:
                 sup_qty = int(input("Enter supplement qty : \n").strip())
@@ -81,6 +89,7 @@ class Operations:
                 print(e)
 
     def ask_supplement(self,stay_length,sup_list,exist_extra_bed=0):
+        '''main function for getting supplement (call ask_supplement_id and ask_supplement_qty)'''
         s_list= []
         supplement_list = []
         if exist_extra_bed > 0:
@@ -125,6 +134,7 @@ class Operations:
                 print("\n",e,"\n")
     
     def check_capacity(self,capacity,number_guest):
+        '''check apartment capacity limit'''
         is_exceed = False
         extra_bed_qty = 0
         if capacity < int(number_guest):
@@ -141,6 +151,7 @@ class Operations:
         return is_exceed , extra_bed_qty
 
     def make_booking(self):
+        '''main function for make booking option'''
         print("\nmake booking\n")
         guest_obj = self.ask_guest_name()
         number_guest = Guest.ask_number_guest()
@@ -163,6 +174,7 @@ class Operations:
         self.records.order_list.append(new_order)
 
     def add_update_apt(self):
+        '''main function for adding/updating apartment information'''
         while True:
             try:
                 print("Add/Update apartment unit")
@@ -173,7 +185,7 @@ class Operations:
                     input_id , input_rate , input_capacity = mod_apt.split(" ")
                     input_id , input_rate , input_capacity = input_id.strip() , input_rate.strip() , input_capacity.strip()
             
-                    # pass all validate
+                    # check if this apartment is in product list
                     is_exist = self.records.find_product(input_id)
                     if not is_exist:
                         if not input_id.startswith("U"):
@@ -194,6 +206,7 @@ class Operations:
                         self.records.product_list.append(new_apt)
                         print("Add new apartment successfully")
                     else:
+                        # if this apartment exist in product list
                         is_exist.price = float(input_rate)
                         is_exist.capacity = int(input_capacity)
                         print("Update existing apartment successfully")
@@ -204,6 +217,7 @@ class Operations:
                 print(e,", please try again","\n")
 
     def add_update_supplement(self):
+        '''main function for adding/updating supplement'''
         while True:
             try:
                 input_update = input("enter updated supplementary list (item_id/name1<str> item_price1<num> , ...): \n").strip()
@@ -243,9 +257,10 @@ class Operations:
                 print(e , ", please try again","\n")
 
     def add_update_bundle(self):
+        '''main function for adding/updating bundle'''
         while True:
             try:
-                input_update = input("enter adding/modifying apartment in format (bundle_id/name aparment_id sup1 sup2 ... rate) : \n").strip()
+                input_update = input("enter adding/modifying bundle in format (bundle_id/name aparment_id sup1 sup2 ... rate) : \n").strip()
                 update_split = input_update.split(" ")
                 bundle_id = update_split[0].strip()
                 apt_id = update_split[1].strip()
@@ -291,6 +306,7 @@ class Operations:
                 print(e,", please try again")
 
     def update_reward_rate(self):
+        '''function for reward rate adjustment'''
         print("\nAdjust the reward rate of all guests\n")
         while True:
             try:
@@ -304,6 +320,7 @@ class Operations:
                 print(e)
 
     def update_redeem_rate(self):
+        '''function for redeem rate adjustment'''
         print("\nAdjust the redeem rate of all guests\n")
         while True:
             try:
@@ -317,10 +334,12 @@ class Operations:
                 print(e)
 
     def display_exist_guest(self):
+        '''Display all guests in guest list'''
         print("\ndisplay exist guest\n")
         self.records.list_guests()
     
     def display_exist_apartment(self,is_display_all = False):
+        '''Display all apartments in product list'''
         if not is_display_all:
             print("\ndisplay exist apartment\n")
         init_str = f'{'Apartment ID':<10}{'Apartment name':^38}{'Rate':<12}{'Capacity':<10}\n'
@@ -331,6 +350,7 @@ class Operations:
         print(init_str)
     
     def display_exist_supplement(self,is_display_all = False):
+        '''Display all supplements in product list'''
         if not is_display_all:
             print("\ndisplay exist supplement\n")
         init_str = f'{'Supplement ID':<10}{'Supplement name':^38}{'Price':<12}\n'
@@ -341,6 +361,7 @@ class Operations:
         print(init_str)
 
     def display_exist_bundle(self,is_display_all = False):
+        '''Display all bundles in product list'''
         if not is_display_all:
             print("\ndisplay exist bundle\n")
         init_str = f'{'Bundle ID':<12}{'Bundle name':^35}{'Component':<40}{'Price':<10}\n'
@@ -351,17 +372,22 @@ class Operations:
         print(init_str)
     
     def display_exist_product(self):
+        '''Display all products in product list (any type)'''
         print("\ndisplay exist product\n")
         self.display_exist_apartment(is_display_all=True)
         self.display_exist_supplement(is_display_all=True)
         self.display_exist_bundle(is_display_all=True)
     
     def display_exist_order(self):
+        '''Display all orders in order list'''
         print("\ndisplay exist order\n")
+        init_str = f'{'Guest Name':<15}{'Product':<40}{'Total Price':<20}{'Earned Reward':<20}{"Date Time":<20}\n'
         for order in self.records.order_list:
-            order.display_info()
+            init_str += order.display_info()
+        print(init_str)
     
     def display_guest_order(self):
+        '''Display guests' order history in order list by guest name'''
         print("\nDisplay a guest order history\n")
         while True:
             try:

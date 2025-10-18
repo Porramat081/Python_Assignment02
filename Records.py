@@ -64,6 +64,11 @@ class Records:
             apt_tuple = (apt,apt_night)
             product_tuple_list = [apt_tuple]
 
+            exist_bundle = None
+            
+            if apt_name.startswith("B"):
+                exist_bundle = apt
+
             for product in product_list:
                 product_split = product.split("x")
                 product_obj = self.find_product(product_split[1].strip(),sup=True)
@@ -72,8 +77,13 @@ class Records:
 
             guest = self.find_guest(guest_name)
             if guest:
-                order = Order(guest,product_tuple_list,total_price=price,reward=reward,time_stamp=time_stamp)
-                self.order_list.append(order)
+                order = None
+                if exist_bundle:
+                    order = Order(guest,product_tuple_list,total_price=price,reward=reward,time_stamp=time_stamp,bundle=exist_bundle)
+                else:
+                    order = Order(guest,product_tuple_list,total_price=price,reward=reward,time_stamp=time_stamp)
+                if order:
+                    self.order_list.append(order)
             read_line = file.readline()
         file.close()   
                    
@@ -98,8 +108,11 @@ class Records:
     
     def list_guests(self):
         '''display guest information in guest_list'''
+        init_str = f'{'Guest ID':<10}{'Guest Name':<20}{'Reward Point':<15}{'Reward Rate':<15}{'Redeem Rate':<15}\n'
         for guest in self.guest_list:
-            guest.display_info()
+            guest_str = guest.display_info() + '\n'
+            init_str += guest_str
+        print(init_str)
     
     def update_products(self,productObj,length):
         '''update new product object to product_list'''

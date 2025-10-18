@@ -1,11 +1,12 @@
 # S4144787 : Porramat Thaepngoen
-# Assignment 2 : part 2 (100%) - pre-version implementation
+# Assignment 2 : part 4 (100%) - configured
 
 import os.path as op
 from Operations import Operations
 from Records import Records
 
 class Main:
+    '''Program entry point'''
     def run():
         if not op.exists("guests.csv"):
             print("Not found guests.csv")

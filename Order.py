@@ -146,9 +146,19 @@ class Order:
     
     def display_info(self):
         '''display order information'''
-        self.guest.display_info()
-        for sup in self.product_list:
-            sup[0].display_info()
+        stay_length = str(self.product_list[0][1])
+        apt_str = f'{stay_length} x {self.product_list[0][0].id}'
+        if self.bundle:
+            apt_str = f'{stay_length} x {self.bundle.id}'
+        supplement_str = ''
+        if len(self.product_list[1:]) > 0:
+            for i in self.product_list[1:]:
+                new_sup = f',{i[1]} x {i[0].id}'
+                supplement_str += new_sup
+        total_price = f'{float(self.total_price):.2f}'
+        earned_reward = f'{self.reward}'
+        record_str = f'{self.guest.name:<15}{apt_str+supplement_str:<40}{total_price:<20}{earned_reward:<20}{self.time_stamp:<20}\n'
+        return record_str
     
     def display_order(self):
         '''return order string'''
@@ -164,14 +174,17 @@ class Order:
     
     def write_file(self):
         '''generate string for writing in csv'''
-        init_string = f'{self.guest.name}, {self.product_list[0][1]} x {self.product_list[0][0].id}, {self.total_price}, {self.reward}, {self.time_stamp}'
+        apt_item = self.product_list[0][0].id
+        if self.bundle:
+            apt_item = self.bundle.id
+        init_string = f'{self.guest.name}, {self.product_list[0][1]} x {apt_item}, {float(self.total_price):.2f}, {self.reward}, {self.time_stamp}'
         product_string = ''
         if len(self.product_list[1:]) > 0:
             for product in self.product_list[1:]:
                 new_string = f'{product[1]} x {product[0].id},'
                 product_string += new_string
         if product_string != '':
-            init_string = f'{self.guest.name}, {self.product_list[0][1]} x {self.product_list[0][0].id}, {product_string} {self.total_price}, {self.reward}, {self.time_stamp}'
+            init_string = f'{self.guest.name}, {self.product_list[0][1]} x {apt_item}, {product_string} {float(self.total_price):.2f}, {self.reward}, {self.time_stamp}'
         return init_string
 
     def get_stat_product(self):

@@ -1,4 +1,5 @@
 class TypeException(Exception):
+    '''Exception for data type exception'''
     def __init__(self, variable , *type):
         condition = ""
         if len(type) > 1:
@@ -8,10 +9,12 @@ class TypeException(Exception):
         super().__init__('\n'+variable + " must be "+condition+'\n')
 
 class OptionException(Exception):
+    '''Exception for option exception'''
     def __init__(self, *option_list):
         super().__init__('\nInvalid option, please choose only: ' + ", ".join(option_list) + '\n')
 
 class InvalidNumber(Exception):
+    '''Exception for invalid number'''
     def __init__(self, variable ,type_constraint):
         condition = ""
         if type_constraint == '+':
@@ -22,6 +25,7 @@ class InvalidNumber(Exception):
         super().__init__(message) 
 
 class ExtrabedException(Exception):
+    '''Exception for extra bed ordering'''
     def __init__(self, option , exist_bed=0):
         message = ""
         if option == 'max':
@@ -31,6 +35,7 @@ class ExtrabedException(Exception):
         super().__init__(f'\n{message}\n')
 
 class CarParkException(Exception):
+    '''Exception for car parking ordering'''
     def __init__(self, stay_length):
         message = 'Car Park must be ordered at least ' + stay_length
         super().__init__(message)

@@ -137,7 +137,10 @@ class Guest:
 
     def display_info(self):
         '''display guest instance information'''
-        print(f'{self.id} {self.name} has {self.reward} point {self.redeem_rate} {self.reward_rate}')
+        reward = f'{self.reward:.2f}'
+        reward_rate = f'{self.reward_rate:.2f}'
+        redeem_rate = f'{self.redeem_rate:.2f}'
+        return f'{self.id:<10}{self.name:<20}{reward:<15}{reward_rate:<15}{redeem_rate:<15}'
     
     def write_file(self):
         '''generate string for writing in csv'''
