@@ -79,10 +79,10 @@ class Order:
             \n{sup_str}\
             \n{'Sub-total:$':<28}{sup_total} (AUD)\
             \n{'-'*69}\
-            \n{'Total cost:$':<28}{total_price} (AUD)\
+            \n{'Total cost:$':<28}{total_price:.2f} (AUD)\
             \n{'Reward points to redeem:':<28}{used_reward} (points)\
             \n{'Discount based on points:$':<28}{discount} (AUD)\
-            \n{'Final total cost:$':<28}{final_price} (AUD)\
+            \n{'Final total cost:$':<28}{final_price:.2f} (AUD)\
             \n{'Earned rewards:':<28}{earn_reward} (points)\
             \n\nThank you for your booking!\nWe hope you will have an enjoyable stay.\n{'='*69}'
         print(receipt)
@@ -110,10 +110,26 @@ class Order:
         '''calculate total price and reward'''
         total_price = 0
         discount = 0
+        deduct_apt = 0
+
         for i in self.product_list:
-            total_price += (float(i[0].price) * int(i[1]))
+            qty = int(i[1])
+            total_price += (float(i[0].price) * qty)
+        
         if self.bundle:
-            total_price = float(self.bundle.price) * self.product_list[0][1]
+            total_price += float(self.bundle.price) * self.product_list[0][1]
+            deduct_apt += float(self.bundle.apt.price) * self.product_list[0][1]
+            print(self.bundle.get_sup_list())
+            print(self.product_list[1:])
+            for i in self.bundle.get_sup_list():
+                for j in self.product_list[1:]:
+                    if i[0] == j[0].id:
+                        deduct_apt += (float(j[0].price) * int(j[1]))
+
+        print(total_price)
+        total_price -= deduct_apt
+        print(total_price)
+      
         guest_reward = self.guest.get_reward(total_cost=None)
         used_point = guest_reward 
         if guest_reward >= 100 and use_reward:

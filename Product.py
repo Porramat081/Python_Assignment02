@@ -100,11 +100,11 @@ class Bundle(Product):
         for sup in self.sup_list:
             exist_product = False
             for sup_export in sup_list_export:
-                if sup_export[0] == sup:
+                if sup_export[0] == sup.strip():
                     exist_product = True
                     sup_export[1] += 1
             if not exist_product:
-                sup_list_export.append({0:sup,1:1})
+                sup_list_export.append({0:sup.strip(),1:1})
         return sup_list_export
                     
     def display_info(self):
