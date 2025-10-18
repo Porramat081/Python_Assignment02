@@ -1,9 +1,9 @@
 Top 3 most valuable guests
-1. Luigi $585.6
-2. Alyssa $551.2
-3. Max $450.6
+1. Alyssa $941.2
+2. Ohm $600.0
+3. Luigi $585.6
 
 Top 3 products
-1. Breakfast  quantity:8  $202.4
-2. U12swan  quantity:4  $800.0
-3. Car Park  quantity:2  $50.0
+1. Breakfast  quantity:12  $303.6
+2. U12swan  quantity:8  $1600.0
+3. Double extra bed (2 people)  quantity:7  $350.0

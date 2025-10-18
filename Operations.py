@@ -375,16 +375,22 @@ class Operations:
         
     def generate_stat(self):
         print("\nGenerate key statistics\n")
+        display_str = ""
         with open("stats.txt", "w") as f:
             product_stat , guest_stat = self.records.generate_stat()
+            display_str += "Top 3 most valuable guests\n"
             f.write("Top 3 most valuable guests\n")
             for index,guest in enumerate(guest_stat):
                 write_str = f'{index+1}. {guest[0]} ${guest[1]}\n'
+                display_str += write_str
                 f.write(write_str)
             f.write("\nTop 3 products\n")
+            display_str += "\nTop 3 products\n"
             for index,product in enumerate(product_stat):
                 write_str = f'{index+1}. {product[0]}  quantity:{product[1]}  ${product[2]}\n'
+                display_str += write_str
                 f.write(write_str)
+        print(display_str)
 
     def save_record(self):
         print("\nsave all record\n")
