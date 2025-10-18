@@ -150,6 +150,18 @@ class Order:
         for sup in self.product_list:
             sup[0].display_info()
     
+    def display_order(self):
+        '''return order string'''
+        init_str = f'{self.product_list[0][1]} x {self.product_list[0][0].id}'
+        if len(self.product_list[1:]) > 0: 
+            init_str += " , "
+            for index, order in enumerate(self.product_list[1:]):
+                init_str += f'{order[1]} x {order[0].name}'
+                if index != (len(self.product_list[1:]) -1):
+                    init_str += " , "
+        init_str = f'{init_str:<38} {self.total_price:<12} {self.reward:<10}'
+        return init_str
+    
     def write_file(self):
         '''generate string for writing in csv'''
         init_string = f'{self.guest.name}, {self.product_list[0][1]} x {self.product_list[0][0].id}, {self.total_price}, {self.reward}, {self.time_stamp}'

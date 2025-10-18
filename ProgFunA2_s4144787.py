@@ -32,7 +32,7 @@ Please choose from the following options:
 3) Add/Update information of multiple supplementary items
 4) Add/Update information of bundle
 5) Display existing all guests
-6) Display existing guest's order history
+6) Display a guest order history
 7) Display existing all products
 8) Display existing all aparment units
 9) Display existing all supplementary items
@@ -56,7 +56,7 @@ Please choose from the following options:
                     elif input_option == 5:
                         operation.display_exist_guest() 
                     elif input_option == 6:
-                        pass
+                        operation.display_guest_order()
                     elif input_option == 7:
                         operation.display_exist_product()
                     elif input_option == 8:
@@ -74,9 +74,9 @@ Please choose from the following options:
                         print("Exit the program , bye!!")
                         break
                     else:
-                        raise Exception("please , enter only 0 - 7")
+                        raise Exception("please , enter only 0 - 12")
                 except ValueError:
-                    print("please , enter only number 0 - 7")
+                    print("please , enter only number 0 - 12")
                 except Exception as e:
                     print("\n",e,"\n")
     

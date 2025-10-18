@@ -165,4 +165,15 @@ class Records:
             for guest in self.guest_list:
                 guest.redeem_rate = new_rate
 
-        
+    
+    def list_guest_order(self,guest):
+        '''display guest history order list'''
+        init_str = f'{'This is the booking and order history for '+guest.name:^70}\n'
+        init_str += f'{'Order ID':<10}{'Products Ordered':^38}{'Total Cost':<12}{'Earned Rewaeds':<10}\n'
+        index = 1
+        for order in self.order_list:
+            if order.guest.name == guest.name:
+               init_str += f'{'Order' + str(index):<10}'
+               init_str += f'{order.display_order()}\n'
+               index += 1
+        print(init_str)

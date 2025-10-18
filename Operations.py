@@ -9,7 +9,7 @@ class Operations:
     def __init__(self , records : Records):
         self.records = records
     
-    def ask_guest_name(self):
+    def ask_guest_name(self,check_order=False):
         while True:
             try:        
                 name = input("Enter the name of the main guest [e.g. Porramat]:\n").strip()
@@ -17,7 +17,10 @@ class Operations:
                     raise TypeException("name","alphabet")
                 else:
                     exist_guest = self.records.find_guest(name)
+
                     if not exist_guest:
+                        if check_order:
+                            return None
                         new_guest = Guest(len(self.records.guest_list)+1 , name , reward=0)
                         self.records.guest_list.append(new_guest)
                         return new_guest
@@ -263,21 +266,37 @@ class Operations:
     def display_exist_guest(self):
         print("\ndisplay exist guest\n")
         self.records.list_guests()
+    
     def display_exist_apartment(self):
         print("\ndisplay exist apartment\n")
         self.records.list_products(type='apt')
+    
     def display_exist_supplement(self):
         print("\ndisplay exist supplement\n")
         self.records.list_products(type='sup')
+    
     def display_exist_product(self):
         print("\ndisplay exist product\n")
         self.records.list_products()
+    
     def display_exist_order(self):
         print("\ndisplay exist order\n")
         for order in self.records.order_list:
             order.display_info()
+    
+    def display_guest_order(self):
+        print("\nDisplay a guest order history\n")
+        while True:
+            try:
+                exist_guest = self.ask_guest_name(check_order=True)
+                if not exist_guest:
+                    raise Exception("This guest does not exist , please try again")
+                self.records.list_guest_order(exist_guest)
+                break
+            except Exception as e:
+                print(e)
+        
+
     def save_record(self):
         print("\nsave all record\n")
-        self.records.save_record()
-
-        
+        self.records.save_record()  
