@@ -153,3 +153,16 @@ class Records:
             for product in self.product_list:
                 write_string = product.write_file() + "\n"
                 file3.write(write_string)
+    
+    def update_guest(self,new_rate,att='reward_rate'):
+        '''update guest reward rate or redeem rate'''
+        if att == 'reward_rate':
+            Guest.set_reward_rate(new_rate)
+            for guest in self.guest_list:
+                guest.reward_rate = new_rate
+        elif att == 'redeem_rate':
+            Guest.set_redeem_rate(new_rate)
+            for guest in self.guest_list:
+                guest.redeem_rate = new_rate
+
+        

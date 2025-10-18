@@ -28,7 +28,7 @@ class Operations:
     def ask_apartment_id(self):
         while True:
             try:
-                apt_id = input("Enter apartment unit ID to book:\n").strip()
+                apt_id = input("Enter apartment unit ID or bundle ID to book:\n").strip()
                 exist_apt = self.records.find_product(apt_id,sup=False)
                 sup_list = []
                 if not exist_apt:
@@ -190,17 +190,17 @@ class Operations:
     def add_update_supplement(self):
         while True:
             try:
-                input_update = input("enter updated supplementary list : \n").strip()
+                input_update = input("enter updated supplementary list (item_name1<str> item_price1<num> , ...): \n").strip()
                 input_update_list = input_update.split(",") if not input_update.endswith(",") else input_update[:-1].split(",")
 
                 if len(input_update_list) >=1 :
                     for j in input_update_list:
                         update_item = j.strip().split(" ")
                         if len(update_item) < 2 or update_item == "":
-                            raise Exception("invalid format -> item_id<str> item_price<num> , ...")
+                            raise Exception("invalid format -> item_name<str> item_price<num> , ...")
                         else:
                             if  update_item[0].strip().isnumeric():
-                                raise Exception("item id must be alphabet")
+                                raise Exception("supplement item name must be alphabet")
                             elif not update_item[1].strip().isnumeric() and not isinstance(float(update_item[1].strip()), float): # isinstance for checking type [7]
                                 raise Exception("item price must be number")
                             elif float(update_item[1].strip()) <= 0:
@@ -214,7 +214,7 @@ class Operations:
                                 if is_exist:
                                     is_exist.price = product_price
                                 else:
-                                    new_id = "SI" + str(self.records.list_products(type="sup",get_len=True))
+                                    new_id = "SI" + str(self.records.list_products(type="sup",get_len=True) +1)
                                     new_member =  SupplementaryItem(id=new_id , name=update_item[0],price=update_item[1])
                                     self.records.product_list.append(new_member)
                     print("Add/Update Supplement Product successfully")
@@ -224,7 +224,41 @@ class Operations:
             except ValueError:
                 print("please enter item price with numeric data\n")
             except Exception as e:
-                print(e , "please try again","\n")
+                print(e , ", please try again","\n")
+
+    def add_update_bundle(self):
+        while True:
+            try:
+                input_update = input("enter adding/modifying apartment in format (bundle_name aparment_id sup1 sup2 ... rate) : \n")
+                update_split = input_update.split(" ")
+            except Exception as e:
+                print(e,", please try again")
+
+    def update_reward_rate(self):
+        print("\nAdjust the reward rate of all guests\n")
+        while True:
+            try:
+                input_rate = float(input("Enter new reward rate (parcentage) : \n").strip())
+                self.records.update_guest(input_rate , att='reward_rate')
+                print("update reward rate successfully")
+                break
+            except ValueError:
+                print("New rate must be number / float data type")
+            except Exception as e:
+                print(e)
+
+    def update_redeem_rate(self):
+        print("\nAdjust the redeem rate of all guests\n")
+        while True:
+            try:
+                input_rate = float(input("Enter new redeem rate : \n").strip())
+                self.records.update_guest(input_rate , att='redeem_rate')
+                print("update redeem rate successfully")
+                break
+            except ValueError:
+                print("New rate must be number / float data type")
+            except Exception as e:
+                print(e)
 
     def display_exist_guest(self):
         print("\ndisplay exist guest\n")

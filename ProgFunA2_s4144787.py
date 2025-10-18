@@ -30,12 +30,15 @@ Please choose from the following options:
 1) Make a booking
 2) Add/Update information of an apartment unit
 3) Add/Update information of multiple supplementary items
-4) Display existing all guests
-5) Display existing guest's order history
-6) Display existing all products
-7) Display existing all aparment units
-8) Display existing all supplementary items
-9) Display existing all orders
+4) Add/Update information of bundle
+5) Display existing all guests
+6) Display existing guest's order history
+7) Display existing all products
+8) Display existing all aparment units
+9) Display existing all supplementary items
+10) Display existing all orders
+11) Adjust the reward rate of all guests
+12) Adjust the redeem rate of all guests
 0) Exit the program
 ==========================================================
 '''
@@ -49,17 +52,23 @@ Please choose from the following options:
                     elif input_option == 3:
                         operation.add_update_supplement()
                     elif input_option == 4:
-                        operation.display_exist_guest() 
+                        operation.add_update_bundle()
                     elif input_option == 5:
-                        pass
+                        operation.display_exist_guest() 
                     elif input_option == 6:
-                        operation.display_exist_product()
+                        pass
                     elif input_option == 7:
-                        operation.display_exist_supplement()
+                        operation.display_exist_product()
                     elif input_option == 8:
                         operation.display_exist_apartment()
                     elif input_option == 9:
+                        operation.display_exist_supplement()
+                    elif input_option == 10:
                         operation.display_exist_order()
+                    elif input_option == 11:
+                        operation.update_reward_rate()
+                    elif input_option == 12:
+                        operation.update_redeem_rate()
                     elif input_option == 0:
                         operation.save_record()
                         print("Exit the program , bye!!")

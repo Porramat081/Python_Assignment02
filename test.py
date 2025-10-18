@@ -1,8 +1,5 @@
-from Error import TypeException
+input_rate = "122.33ee"
 
-id = 56
+res = isinstance(float(input_rate),float)
 
-if type(id) != int:
-    print("not int")
-else:
-    print("is int")
+print(res)

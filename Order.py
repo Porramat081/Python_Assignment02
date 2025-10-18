@@ -57,10 +57,12 @@ class Order:
         '''display order information and print in recipt form'''
         bundleName = ""
         show_rate = f'\n{'Apartment rate:$':<28}{self.product_list[0][0].price} (AUD)'
+        sub_apt = f'{float(self.product_list[0][0].price )* int(self.product_list[0][1])}'
         if self.bundle:
             bundleName = f'\n{'Bundle name:':<28}{self.bundle.name}'
             show_rate = f'\n{'Bundle rate:$':<28}{self.bundle.price} (AUD)'
-        total_price,discount,final_price,earn_reward,used_reward = self.compute_cost(use_reward)
+            sub_apt = f'{float(self.bundle.price)* int(self.product_list[0][1])}'
+        total_price,discount,final_price,earn_reward,used_reward,deduct_sup = self.compute_cost(use_reward)
         sup_str , sup_total = self.format_sup_list(self.product_list[0][1])
 
         receipt = f'{'='*69}\n{"Debuggers Hut Serviced Apartments - Booking Receipt":^70}\n{'='*69}\
@@ -73,11 +75,11 @@ class Order:
             \n{'Check-out date:':<28}{check_out}\
             \n{'Length of stay:':<28}{self.product_list[0][1]} (nights)\
             \n{'Booking date:':28}{datetime.now().strftime("%d/%m/%Y")}\
-            \n{'Sub-total:$':<28}{float(self.product_list[0][0].price )* int(self.product_list[0][1])} (AUD)\
+            \n{'Sub-total:$':<28}{sub_apt} (AUD)\
             \n{'-'*69}\
             \n{'Supplementary items'}\
             \n{sup_str}\
-            \n{'Sub-total:$':<28}{sup_total} (AUD)\
+            \n{'Sub-total:$':<28}{sup_total - deduct_sup} (AUD)\
             \n{'-'*69}\
             \n{'Total cost:$':<28}{total_price:.2f} (AUD)\
             \n{'Reward points to redeem:':<28}{used_reward} (points)\
@@ -111,6 +113,7 @@ class Order:
         total_price = 0
         discount = 0
         deduct_apt = 0
+        deduct_suptotal = 0
 
         for i in self.product_list:
             qty = int(i[1])
@@ -124,11 +127,10 @@ class Order:
             for i in self.bundle.get_sup_list():
                 for j in self.product_list[1:]:
                     if i[0] == j[0].id:
+                        deduct_suptotal += (float(j[0].price) * int(j[1]))
                         deduct_apt += (float(j[0].price) * int(j[1]))
 
-        print(total_price)
         total_price -= deduct_apt
-        print(total_price)
       
         guest_reward = self.guest.get_reward(total_cost=None)
         used_point = guest_reward 
@@ -140,7 +142,7 @@ class Order:
         self.guest.update_reward(add_reward=used_point , down=True)
         earn_reward = self.guest.get_reward(final_price)
         self.guest.update_reward(earn_reward)
-        return total_price,discount,final_price,earn_reward,used_point
+        return total_price,discount,final_price,earn_reward,used_point,deduct_suptotal
     
     def display_info(self):
         '''display order information'''
