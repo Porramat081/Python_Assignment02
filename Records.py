@@ -121,10 +121,11 @@ class Records:
 
     def list_products(self , type="all" , get_len=False):
         '''display product information in product_list'''
+        export_list = []
         if type == 'apt':        
             for product in self.product_list:
                 if isinstance(product,ApartmentUnit):
-                    product.display_info()
+                    export_list.append(product.display_info())
         elif type == 'sup':
             len_sup = 0
             for product in self.product_list:
@@ -132,12 +133,17 @@ class Records:
                     if get_len:
                         len_sup += 1
                     else:
-                        product.display_info()
+                        export_list.append(product.display_info())
             if get_len:
                 return len_sup
+        elif type == "bun":
+            for product in self.product_list:
+                if isinstance(product,Bundle):
+                    export_list.append(product.display_info())
         else:
             for product in self.product_list:
-                product.display_info()
+                export_list.append(product.display_info())
+        return export_list
 
     def save_record(self):
         '''write data in guest_list , order_list , product_list to corresponding csv files'''
@@ -201,7 +207,6 @@ class Records:
                         stat[2] += stat_product[2]
                 if not is_exist:
                     stat_list.append(stat_product)
-        sorted_list = sorted(stat_list, key=lambda x: x[2] , reverse=True)
+        sorted_list = sorted(stat_list, key=lambda x: x[1] , reverse=True)
         sorted_list2 = sorted(stat_list2, key=lambda x: x[1] , reverse=True)
-        print(sorted_list[:3])
-        print(sorted_list2[:3])
+        return (sorted_list[0:3],sorted_list2[0:3])

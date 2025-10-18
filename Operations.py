@@ -39,10 +39,10 @@ class Operations:
                 else:
                     if isinstance(exist_apt,Bundle):
                         sup_list = exist_apt.get_sup_list()
-                        exist_apt.display_info()
+                        print(exist_apt.display_info())
                         return (exist_apt.apt , sup_list , exist_apt)
                     else:
-                        exist_apt.display_info()
+                        print(exist_apt.display_info())
                         return (exist_apt,sup_list,None)
             except Exception as e:
                 print(e)
@@ -57,6 +57,7 @@ class Operations:
                 elif exist_sup.id == "SI6" and exist_extra_bed >= 2:
                     raise ExtrabedException("max" , exist_bed=exist_extra_bed)                    
                 else:
+                    print(exist_sup.display_info())
                     return exist_sup
             except Exception as e:
                 print(e)
@@ -81,10 +82,17 @@ class Operations:
 
     def ask_supplement(self,stay_length,sup_list,exist_extra_bed=0):
         s_list= []
+        supplement_list = []
+        if exist_extra_bed > 0:
+            extrabed_item = self.records.find_product("SI6",sup=True)
+            supplement_list.append({0:extrabed_item,1:int(exist_extra_bed)*int(stay_length)})
         for sup_item in sup_list:
             s_item = self.records.find_product(sup_item[0].strip(),sup=True)
+            if s_item.id == "SI6":
+                exist_extra_bed += sup_item[1]
             s_list.append({0:s_item,1:sup_item[1]})
-        supplement_list = [] + s_list
+
+        supplement_list = supplement_list + s_list
         while True:
             try:
                 question = "Do you want to add supplement? (y/n)\n" if len(supplement_list) == 0 else \
@@ -96,15 +104,18 @@ class Operations:
                     selected_sup = self.ask_supplement_id(exist_extra_bed)
                     selected_qty = self.ask_supplement_qty(selected_sup,stay_length,exist_extra_bed=exist_extra_bed)
                     is_exist_selected_sup = False
-                    for sup in supplement_list:
+
+                    for sup in supplement_list:            
                         if sup[0].id == selected_sup.id:
                             is_exist_selected_sup = True
                             if selected_sup.id == "SI6":
-                                sup[1] += (int(selected_qty) + int(exist_extra_bed))* int(stay_length)
+                                exist_extra_bed += selected_qty
+                                sup[1] += (int(selected_qty))* int(stay_length)
                             else:
                                 sup[1] += int(selected_qty)
                     if not is_exist_selected_sup:
                         if selected_sup.id == "SI6":
+                            exist_extra_bed += selected_qty
                             supplement_list.append(({0:selected_sup,1:selected_qty*int(stay_length)}))
                         else:
                             supplement_list.append(({0:selected_sup,1:selected_qty}))
@@ -117,7 +128,9 @@ class Operations:
         is_exceed = False
         extra_bed_qty = 0
         if capacity < int(number_guest):
-            print("Please consider ordering an extra bed.")
+            print("\nNumber of guest exceed than apartment capacity")
+            print("Please consider ordering an extra bed.\n")
+            print("1 extrabed for 2 people (maximum 2 bed)\n")
             extra_bed_qty = self.ask_supplement_qty(is_extrabed=True)
             if (extra_bed_qty * 2) + capacity <  int(number_guest):
                 is_exceed = True 
@@ -267,17 +280,41 @@ class Operations:
         print("\ndisplay exist guest\n")
         self.records.list_guests()
     
-    def display_exist_apartment(self):
-        print("\ndisplay exist apartment\n")
-        self.records.list_products(type='apt')
+    def display_exist_apartment(self,is_display_all = False):
+        if not is_display_all:
+            print("\ndisplay exist apartment\n")
+        init_str = f'{'Apartment ID':<10}{'Apartment name':^38}{'Rate':<12}{'Capacity':<10}\n'
+        list_apt_str = self.records.list_products(type='apt')
+        for apt_str in list_apt_str:
+            init_str += apt_str
+            init_str += "\n"
+        print(init_str)
     
-    def display_exist_supplement(self):
-        print("\ndisplay exist supplement\n")
-        self.records.list_products(type='sup')
+    def display_exist_supplement(self,is_display_all = False):
+        if not is_display_all:
+            print("\ndisplay exist supplement\n")
+        init_str = f'{'Supplement ID':<10}{'Supplement name':^38}{'Price':<12}\n'
+        list_apt_str = self.records.list_products(type='sup')
+        for apt_str in list_apt_str:
+            init_str += apt_str
+            init_str += "\n"
+        print(init_str)
+
+    def display_exist_bundle(self,is_display_all = False):
+        if not is_display_all:
+            print("\ndisplay exist bundle\n")
+        init_str = f'{'Bundle ID':<12}{'Bundle name':^35}{'Component':<40}{'Price':<10}\n'
+        list_apt_str = self.records.list_products(type='bun')
+        for apt_str in list_apt_str:
+            init_str += apt_str
+            init_str += "\n"
+        print(init_str)
     
     def display_exist_product(self):
         print("\ndisplay exist product\n")
-        self.records.list_products()
+        self.display_exist_apartment(is_display_all=True)
+        self.display_exist_supplement(is_display_all=True)
+        self.display_exist_bundle(is_display_all=True)
     
     def display_exist_order(self):
         print("\ndisplay exist order\n")
@@ -299,8 +336,15 @@ class Operations:
     def generate_stat(self):
         print("\nGenerate key statistics\n")
         with open("stats.txt", "w") as f:
-            stat_text = self.records.generate_stat()
-            f.write("Woops! I have deleted the content!")
+            product_stat , guest_stat = self.records.generate_stat()
+            f.write("Top 3 most valuable guests\n")
+            for index,guest in enumerate(guest_stat):
+                write_str = f'{index+1}. {guest[0]} ${guest[1]}\n'
+                f.write(write_str)
+            f.write("\nTop 3 products\n")
+            for index,product in enumerate(product_stat):
+                write_str = f'{index+1}. {product[0]}  quantity:{product[1]}  ${product[2]}\n'
+                f.write(write_str)
 
     def save_record(self):
         print("\nsave all record\n")

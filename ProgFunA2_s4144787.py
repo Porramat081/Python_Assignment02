@@ -36,10 +36,11 @@ Please choose from the following options:
 7) Display existing all products
 8) Display existing all aparment units
 9) Display existing all supplementary items
-10) Display existing all orders
-11) Adjust the reward rate of all guests
-12) Adjust the redeem rate of all guests
-13) Generate key statistics
+10) Display existing all bundles
+11) Display existing all orders
+12) Adjust the reward rate of all guests
+13) Adjust the redeem rate of all guests
+14) Generate key statistics
 0) Exit the program
 ==========================================================
 '''
@@ -65,12 +66,14 @@ Please choose from the following options:
                     elif input_option == 9:
                         operation.display_exist_supplement()
                     elif input_option == 10:
-                        operation.display_exist_order()
+                        operation.display_exist_bundle()
                     elif input_option == 11:
-                        operation.update_reward_rate()
+                        operation.display_exist_order()
                     elif input_option == 12:
-                        operation.update_redeem_rate()
+                        operation.update_reward_rate()
                     elif input_option == 13:
+                        operation.update_redeem_rate()
+                    elif input_option == 14:
                         operation.generate_stat()
                     elif input_option == 0:
                         operation.save_record()

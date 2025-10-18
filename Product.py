@@ -31,7 +31,8 @@ class Product:
 
     def display_info(self):
         '''display general product information'''
-        print(f'{self.__id} {self.__name} {float(self.__price):.2f}')
+        rate = f'{float(self.__price):.2f} AUD'
+        return f'{self.__id:<20}{self.__name:<30}{rate:<12}'
 
 class ApartmentUnit(Product):
     '''class AparmentUnit - For managing aparment unit information (inherit from class Product)'''
@@ -69,7 +70,8 @@ class ApartmentUnit(Product):
     
     def display_info(self):
         '''display aparment information (overriding method)'''
-        print(f'{self.id} {self.name} {float(self.price):.2f} {self.capacity}')
+        rate = f'{float(self.price):.2f} AUD'
+        return f'{self.id:<18} {self.name:<29} {rate:<14} {self.capacity:<7}'
 
     def write_file(self):
         '''generate string for writing in csv'''
@@ -118,8 +120,10 @@ class Bundle(Product):
         list_sup_str = ""
         for k,v in dict_sup.items():
             add_str = str(v) + " x " + k
-            list_sup_str += (add_str + " , ")
-        print(f'{self.id} {self.name} , {self.apt.id} , {list_sup_str}{self.price}')
+            list_sup_str += (add_str + ",")
+        component_str = f'{self.apt.id},{list_sup_str}'
+        format_price = f'{self.price} AUD'
+        return f'{self.id:<12}{self.name:<35}{component_str:<39}{format_price:<10}'
 
     def write_file(self):
         '''generate string for writing in csv'''

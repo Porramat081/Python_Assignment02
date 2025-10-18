@@ -65,6 +65,7 @@ class Order:
         total_price,discount,final_price,earn_reward,used_reward,deduct_sup = self.compute_cost(use_reward)
         sup_str , sup_total = self.format_sup_list(self.product_list[0][1])
 
+        sub_pro_total = sup_total - deduct_sup
         receipt = f'{'='*69}\n{"Debuggers Hut Serviced Apartments - Booking Receipt":^70}\n{'='*69}\
             \n{'Guest name:':<28}{self.guest.name}\
             \n{'Number of guests:':<28}{number_guest}\
@@ -79,7 +80,7 @@ class Order:
             \n{'-'*69}\
             \n{'Supplementary items'}\
             \n{sup_str}\
-            \n{'Sub-total:$':<28}{sup_total - deduct_sup} (AUD)\
+            \n{'Sub-total:$':<28}{sub_pro_total:.2f} (AUD)\
             \n{'-'*69}\
             \n{'Total cost:$':<28}{total_price:.2f} (AUD)\
             \n{'Reward points to redeem:':<28}{used_reward} (points)\
@@ -115,6 +116,7 @@ class Order:
         deduct_apt = 0
         deduct_suptotal = 0
 
+
         for i in self.product_list:
             qty = int(i[1])
             total_price += (float(i[0].price) * qty)
@@ -125,8 +127,8 @@ class Order:
             for i in self.bundle.get_sup_list():
                 for j in self.product_list[1:]:
                     if i[0] == j[0].id:
-                        deduct_suptotal += (float(j[0].price) * int(j[1]))
-                        deduct_apt += (float(j[0].price) * int(j[1]))
+                        deduct_suptotal += (float(j[0].price) * int(i[1]))
+                        deduct_apt += (float(j[0].price) * int(i[1]))
 
         total_price -= deduct_apt
       
@@ -179,7 +181,7 @@ class Order:
             return [{0:self.bundle.name , 1:stay_length ,2:stay_length * float(self.bundle.price)}]
         sub_list = [{0:self.product_list[0][0].id , 1:stay_length ,  2:stay_length * float(self.product_list[0][0].price)}]
         for sub in self.product_list[1:]:
-            sub_list.append({0:sub[0].name , 1:sub[1] ,2:sub[1] * float(sub[0].price)})
+            sub_list.append({0:sub[0].name , 1:int(sub[1]) ,2:int(sub[1]) * float(sub[0].price)})
         return sub_list
     
     def get_stat_guest(self):
